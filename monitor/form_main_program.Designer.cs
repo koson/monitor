@@ -83,6 +83,8 @@
             this.led3 = new NationalInstruments.UI.WindowsForms.Led();
             this.moto_serialPort = new System.IO.Ports.SerialPort(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.led7 = new NationalInstruments.UI.WindowsForms.Led();
+            this.slide = new NationalInstruments.UI.WindowsForms.Slide();
             this.startruningbutton = new System.Windows.Forms.Button();
             this.require_groupBox = new System.Windows.Forms.GroupBox();
             this.label_require_max_data_contain = new System.Windows.Forms.Label();
@@ -131,7 +133,7 @@
             this.label_result_speed_data = new System.Windows.Forms.Label();
             this.label_result_speed = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.moto_speedlabel = new System.Windows.Forms.Label();
+            this.moto_start_led = new NationalInstruments.UI.WindowsForms.Led();
             this.motoStopbutton = new System.Windows.Forms.Button();
             this.motoStartbutton = new System.Windows.Forms.Button();
             this.formmainprogramBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -153,17 +155,20 @@
             ((System.ComponentModel.ISupportInitialize)(this.led4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.led3)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.led7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.slide)).BeginInit();
             this.require_groupBox.SuspendLayout();
             this.result_groupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.moto_start_led)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formmainprogramBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // button_reset
             // 
-            this.button_reset.Location = new System.Drawing.Point(142, 151);
+            this.button_reset.Location = new System.Drawing.Point(116, 20);
             this.button_reset.Name = "button_reset";
-            this.button_reset.Size = new System.Drawing.Size(54, 32);
+            this.button_reset.Size = new System.Drawing.Size(71, 32);
             this.button_reset.TabIndex = 30;
             this.button_reset.Text = "重置";
             this.button_reset.UseVisualStyleBackColor = true;
@@ -171,7 +176,7 @@
             // 
             // button_start
             // 
-            this.button_start.Location = new System.Drawing.Point(18, 151);
+            this.button_start.Location = new System.Drawing.Point(24, 24);
             this.button_start.Name = "button_start";
             this.button_start.Size = new System.Drawing.Size(71, 32);
             this.button_start.TabIndex = 28;
@@ -186,7 +191,7 @@
             // led1
             // 
             this.led1.LedStyle = NationalInstruments.UI.LedStyle.Round3D;
-            this.led1.Location = new System.Drawing.Point(107, 24);
+            this.led1.Location = new System.Drawing.Point(216, 13);
             this.led1.Name = "led1";
             this.led1.Size = new System.Drawing.Size(50, 50);
             this.led1.TabIndex = 85;
@@ -195,7 +200,7 @@
             // 
             this.label_time_unit.AutoSize = true;
             this.label_time_unit.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_time_unit.Location = new System.Drawing.Point(153, 120);
+            this.label_time_unit.Location = new System.Drawing.Point(135, 122);
             this.label_time_unit.Name = "label_time_unit";
             this.label_time_unit.Size = new System.Drawing.Size(26, 16);
             this.label_time_unit.TabIndex = 84;
@@ -208,7 +213,7 @@
             this.label_time.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label_time.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label_time.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
-            this.label_time.Location = new System.Drawing.Point(70, 120);
+            this.label_time.Location = new System.Drawing.Point(53, 122);
             this.label_time.Name = "label_time";
             this.label_time.Size = new System.Drawing.Size(18, 18);
             this.label_time.TabIndex = 84;
@@ -225,8 +230,9 @@
             // 
             // thermometer
             // 
-            this.thermometer.Location = new System.Drawing.Point(347, 15);
+            this.thermometer.Location = new System.Drawing.Point(347, 12);
             this.thermometer.Name = "thermometer";
+            this.thermometer.Range = new NationalInstruments.UI.Range(0D, 1000D);
             this.thermometer.Size = new System.Drawing.Size(72, 176);
             this.thermometer.TabIndex = 81;
             this.thermometer.ThermometerStyle = NationalInstruments.UI.ThermometerStyle.Flat;
@@ -451,7 +457,7 @@
             this.label1.AutoSize = true;
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(410, 135);
+            this.label1.Location = new System.Drawing.Point(425, 134);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 18);
             this.label1.TabIndex = 82;
@@ -461,6 +467,7 @@
             // 
             this.flow_gauge.Location = new System.Drawing.Point(181, 3);
             this.flow_gauge.Name = "flow_gauge";
+            this.flow_gauge.Range = new NationalInstruments.UI.Range(0D, 1000D);
             this.flow_gauge.Size = new System.Drawing.Size(160, 152);
             this.flow_gauge.TabIndex = 81;
             // 
@@ -468,7 +475,6 @@
             // 
             this.press_gauge.Location = new System.Drawing.Point(3, 3);
             this.press_gauge.Name = "press_gauge";
-            this.press_gauge.Range = new NationalInstruments.UI.Range(0D, 25D);
             this.press_gauge.Size = new System.Drawing.Size(160, 152);
             this.press_gauge.TabIndex = 80;
             // 
@@ -588,7 +594,7 @@
             // 
             // timer
             // 
-            this.timer.Interval = 10;
+            this.timer.Interval = 500;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // zoomStateStackBindingSource
@@ -713,17 +719,17 @@
             // 
             // moto_serialPort
             // 
+            this.moto_serialPort.ReadBufferSize = 128;
+            this.moto_serialPort.WriteBufferSize = 128;
             this.moto_serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.moto_serialPort_DataReceived);
             // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.groupBox1.Controls.Add(this.startruningbutton);
-            this.groupBox1.Controls.Add(this.button_start);
+            this.groupBox1.Controls.Add(this.led7);
             this.groupBox1.Controls.Add(this.label_time_unit);
-            this.groupBox1.Controls.Add(this.led1);
             this.groupBox1.Controls.Add(this.label_time);
-            this.groupBox1.Controls.Add(this.button_reset);
+            this.groupBox1.Controls.Add(this.button_start);
             this.groupBox1.Location = new System.Drawing.Point(1041, 436);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(228, 200);
@@ -731,9 +737,27 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "操作";
             // 
+            // led7
+            // 
+            this.led7.LedStyle = NationalInstruments.UI.LedStyle.Round3D;
+            this.led7.Location = new System.Drawing.Point(120, 20);
+            this.led7.Name = "led7";
+            this.led7.Size = new System.Drawing.Size(50, 50);
+            this.led7.TabIndex = 92;
+            // 
+            // slide
+            // 
+            this.slide.Location = new System.Drawing.Point(51, 119);
+            this.slide.Name = "slide";
+            this.slide.ScalePosition = NationalInstruments.UI.NumericScalePosition.TopBottom;
+            this.slide.Size = new System.Drawing.Size(200, 71);
+            this.slide.SlideStyle = NationalInstruments.UI.SlideStyle.SunkenWithGrip;
+            this.slide.TabIndex = 0;
+            this.slide.AfterChangeValue += new NationalInstruments.UI.AfterChangeNumericValueEventHandler(this.slide_AfterChangeValue);
+            // 
             // startruningbutton
             // 
-            this.startruningbutton.Location = new System.Drawing.Point(18, 35);
+            this.startruningbutton.Location = new System.Drawing.Point(16, 20);
             this.startruningbutton.Name = "startruningbutton";
             this.startruningbutton.Size = new System.Drawing.Size(71, 32);
             this.startruningbutton.TabIndex = 90;
@@ -1300,7 +1324,11 @@
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.groupBox2.Controls.Add(this.moto_speedlabel);
+            this.groupBox2.Controls.Add(this.moto_start_led);
+            this.groupBox2.Controls.Add(this.led1);
+            this.groupBox2.Controls.Add(this.slide);
+            this.groupBox2.Controls.Add(this.startruningbutton);
+            this.groupBox2.Controls.Add(this.button_reset);
             this.groupBox2.Controls.Add(this.motoStopbutton);
             this.groupBox2.Controls.Add(this.motoStartbutton);
             this.groupBox2.Location = new System.Drawing.Point(763, 436);
@@ -1310,21 +1338,17 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "操作";
             // 
-            // moto_speedlabel
+            // moto_start_led
             // 
-            this.moto_speedlabel.AutoSize = true;
-            this.moto_speedlabel.BackColor = System.Drawing.SystemColors.HighlightText;
-            this.moto_speedlabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.moto_speedlabel.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.moto_speedlabel.Location = new System.Drawing.Point(30, 90);
-            this.moto_speedlabel.Name = "moto_speedlabel";
-            this.moto_speedlabel.Size = new System.Drawing.Size(112, 18);
-            this.moto_speedlabel.TabIndex = 89;
-            this.moto_speedlabel.Text = "电机转速设定";
+            this.moto_start_led.LedStyle = NationalInstruments.UI.LedStyle.Round3D;
+            this.moto_start_led.Location = new System.Drawing.Point(216, 69);
+            this.moto_start_led.Name = "moto_start_led";
+            this.moto_start_led.Size = new System.Drawing.Size(50, 50);
+            this.moto_start_led.TabIndex = 91;
             // 
             // motoStopbutton
             // 
-            this.motoStopbutton.Location = new System.Drawing.Point(152, 35);
+            this.motoStopbutton.Location = new System.Drawing.Point(116, 78);
             this.motoStopbutton.Name = "motoStopbutton";
             this.motoStopbutton.Size = new System.Drawing.Size(71, 32);
             this.motoStopbutton.TabIndex = 88;
@@ -1334,7 +1358,7 @@
             // 
             // motoStartbutton
             // 
-            this.motoStartbutton.Location = new System.Drawing.Point(30, 35);
+            this.motoStartbutton.Location = new System.Drawing.Point(16, 76);
             this.motoStartbutton.Name = "motoStartbutton";
             this.motoStartbutton.Size = new System.Drawing.Size(71, 32);
             this.motoStartbutton.TabIndex = 86;
@@ -1391,12 +1415,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.led3)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.led7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.slide)).EndInit();
             this.require_groupBox.ResumeLayout(false);
             this.require_groupBox.PerformLayout();
             this.result_groupBox.ResumeLayout(false);
             this.result_groupBox.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.moto_start_led)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.formmainprogramBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1509,8 +1535,10 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button motoStopbutton;
         private System.Windows.Forms.Button motoStartbutton;
-        private System.Windows.Forms.Label moto_speedlabel;
         private System.Windows.Forms.Button startruningbutton;
+        private NationalInstruments.UI.WindowsForms.Slide slide;
+        private NationalInstruments.UI.WindowsForms.Led moto_start_led;
+        private NationalInstruments.UI.WindowsForms.Led led7;
 
     }
 }

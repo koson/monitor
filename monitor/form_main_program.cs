@@ -19,22 +19,23 @@ namespace monitor
 
     public partial class form_main_program : Form
     {
-        private byte[] buff = new byte[100];                        //接受stm32 
-        private byte[] mode = new byte[8];                          //发送stm32
+        private byte[] buff = new byte[6];                        //接受stm32 
+        private byte[] set_speed_mode = new byte[2];                          //发送stm32转速
         private int[] limit_parameter = new int[8];
 
         private DateTime before_date;
         private DateTime after_date;
         /* modbus 功能*/
+        int modbus_counter;
         private byte[] moto_buff = new byte[10];
         //写
-        private byte[] modbus_start = new byte[] { 0x01, 0x06, 0x20, 0x00, 0x00, 0x01, 0x43, 0xCA };   //电机开始
+        private byte[] modbus_start = new byte[] { 0x01, 0x06, 0x20, 0x00, 0x00, 0x01, 200, 1 };   //电机开始
         private byte[] modbus_stop = new byte[] { 0x01, 0x06, 0x20, 0x00, 0x00, 0x05, 0x42, 0x09 };    //电机停转
         //读
-        private byte[] moto_rspeed = new byte[] { 0x01, 0x03, 0x10, 0x0F, 0x00, 0x01, 0xB0, 0xC9 };    //电机转速
-        private byte[] moto_rcurrent = new byte[] { 0x01, 0x03, 0x10, 0x04, 0x00, 0x01, 0xC1, 0x0B };  //电机电流
-        private byte[] moto_rpower = new byte[] { 0x01, 0x03, 0x10, 0x03, 0x00, 0x01, 0x70, 0xCA };    //电机功率
-        private byte[] moto_rvoltage = new byte[] { 0x01, 0x03, 0x30, 0x00, 0x00, 0x01, 0x8B, 0x0A };  //电机电压
+        private byte[] moto_rspeed = new byte[8] { 0x01, 0x03, 0x10, 0x0F, 0x00, 0x01, 0xB0, 0xC9 };    //电机转速
+        private byte[] moto_rcurrent = new byte[8] { 0x01, 0x03, 0x10, 0x04, 0x00, 0x01, 0xC1, 0x0B };  //电机电流
+        private byte[] moto_rpower = new byte[8] { 0x01, 0x03, 0x10, 0x03, 0x00, 0x01, 0x70, 0xCA };    //电机功率
+        private byte[] moto_rvoltage = new byte[8] { 0x01, 0x03, 0x30, 0x00, 0x00, 0x01, 0x8B, 0x0A };  //电机电压
 
         /*下位机读取数据*/
         private long counter;
@@ -168,9 +169,14 @@ namespace monitor
                     moto_serial_init();
                     led1.Value = true;
                     mode_init();
-                    send_data();
-                    moto_send_data();
+                    send_data(set_speed_mode);
                     counter = -1;
+                    modbus_counter = -1;
+                    if (myTask != null)
+                    {
+                        myTask.Dispose();
+                    }
+                    myTask = new Task();
                     try
                     {
                         myTask.AIChannels.CreateVoltageChannel(
@@ -236,16 +242,29 @@ namespace monitor
 
         private void button_start_Click(object sender, EventArgs e)
         {
-            before_date = System.DateTime.Now;
-            timer.Start();
+            if (startruningbutton.Text == "关闭")
+            {
+                led7.Value = true;
+                before_date = System.DateTime.Now;
+                timer.Start();
+                byte[] a = new byte[] { 64, 65 };
+                send_data(a);
+            }
         }
         private void button_reset_Click(object sender, EventArgs e)
         {
             try
             {
+                led7.Value = false;
+                byte[] b = new byte[] { 65, 64 };
+                send_data(b);
+
                 serial_init();
                 led1.Value = false;
+                startruningbutton.Text = "开始";
+
                 timer.Stop();
+                reset_gauge();
                 list_moto_speed.Clear();
                 list_flow.Clear();
                 zeggraph_init();
@@ -258,11 +277,34 @@ namespace monitor
         }
         private void timer_Tick(object sender, EventArgs e)
         {
+            /* 发送指令*/
+            modbus_counter++;
+            if (modbus_counter == 4)
+            {
+                modbus_counter = 0;
+            }
+            switch (modbus_counter)
+            {
+                case 0:
+                    moto_send_data(moto_rspeed);
+                    break;
+                case 1:
+                    moto_send_data(moto_rcurrent);
+                    break;
+                case 2:
+                    moto_send_data(moto_rpower);
+                    break;
+                case 3:
+                    moto_send_data(moto_rvoltage);
+                    break;
+            } 
+            //modbus
+            /*   时间   */
             after_date = System.DateTime.Now;
             TimeSpan ts = after_date.Subtract(before_date);
             int second = (int)ts.TotalMilliseconds;
-            analogInReader.BeginReadMultiSample(-1, analogCallback, myTask);
             //画图
+            analogInReader.BeginReadMultiSample(-1, analogCallback, myTask);
             label_time.Text = second.ToString();
             show_data();
             if (is_running_ok() == false)
@@ -305,7 +347,7 @@ namespace monitor
         }
         private void serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            serialPort.Read(buff, 0, 10);
+            serialPort.Read(buff, 0, 6);
             data_analysis();
         }
         private void moto_serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -316,8 +358,7 @@ namespace monitor
 
         private void motoStartbutton_Click(object sender, EventArgs e)
         {
-            string str = Encoding.ASCII.GetString(modbus_start);
-            moto_serialPort.Write(str);
+            moto_send_data(modbus_start);
         }
 
         private void motoStopbutton_Click(object sender, EventArgs e)
@@ -326,9 +367,12 @@ namespace monitor
             moto_serialPort.Write(str);
         }
 
-        private void changeSpeedbutton_Click(object sender, EventArgs e)
+        private void slide_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
         {
-
+            double temp = slide.Value*4096;
+            set_speed_mode[0] = (byte)(temp / 256);
+            set_speed_mode[1] = (byte)(temp % 256);
+            send_data(set_speed_mode);
         }
         /***********************功能函数****************************/
         private void initialize()
@@ -362,7 +406,7 @@ namespace monitor
             try
             {
 
-                    if ((buff[0] == 'A') && (buff[9] == 'B'))
+                    if ((buff[0] == 'A') && (buff[5] == 'B'))
                     {
                         flow = buff[1];
                         flow = flow << 8;
@@ -397,30 +441,18 @@ namespace monitor
         {
             if (set_mode == "恒速模式")
             {
-                mode[0] = (byte)'A';
-                mode[1] = (byte)'0';
-                mode[2] = (byte)(set_load / 256);
-                mode[3] = (byte)(set_load % 256);
-                mode[4] = (byte)(set_frquency / 256);
-                mode[5] = (byte)(set_frquency % 256);
-                mode[6] = (byte)(set_time / 256);
-                mode[7] = (byte)(set_time % 256);
+                set_speed_mode[0] = (byte)(set_speed / 256);
+                set_speed_mode[1] = (byte)(set_speed % 256);
             }
             if (set_mode == "出厂试验")
             {
-                mode[0] = (byte)'B';
-                mode[1] = (byte)'0';
-                mode[2] = (byte)(Convert.ToInt16(set_speed) / 256);
-                mode[3] = (byte)(Convert.ToInt16(set_speed) % 256);
-                mode[4] = (byte)(Convert.ToInt16(set_speed) / 256);
-                mode[5] = (byte)(Convert.ToInt16(set_speed) % 256);
             }
             set_mode = "初始化";
         }
         /* 发送stm32控制指令*/
-        private void send_data()
+        private void send_data(byte[] information)
         {
-            string str = Encoding.ASCII.GetString(mode);
+            string str = Encoding.ASCII.GetString(information);
             if (serialPort.IsOpen == false)
             {
                 serialPort.Open();
@@ -428,14 +460,13 @@ namespace monitor
             serialPort.Write(str);//直接发送字符串
         }
         /* 发送电机控制指令*/
-        private void moto_send_data()
+        private void moto_send_data(byte[] information)
         {
-            string str = Encoding.ASCII.GetString(mode);
             if (moto_serialPort.IsOpen == false)
             {
                 moto_serialPort.Open();
             }
-            moto_serialPort.Write(str);//直接发送字符串
+            moto_serialPort.Write(information, 0, information.Length);
         }
         /* stm32串口初始化*/
         private void serial_init()
@@ -524,8 +555,8 @@ namespace monitor
         {
             sheet.Name = "第一页";
             row_count++;
-            sheet.Cells[row_count, 1] = moto_speed.ToString();
-            sheet.Cells[row_count, 2] = flow.ToString();
+            sheet.Cells[row_count, 1] = flow.ToString();
+            sheet.Cells[row_count, 2] = temperature.ToString();
         }
         private bool is_running_ok()
         {
@@ -546,13 +577,14 @@ namespace monitor
             press_gauge.Value = Math.Round(pressure, 2);
             label_press_data.Text = Math.Round(pressure, 2).ToString();
 
-
+            //stm32 接受数据绘制
             flow_gauge.Value = flow;
             label_float_data.Text = flow.ToString();
+
             thermometer.Value = temperature;
             tempertature_label.Text = temperature.ToString();
 
-
+            //画图
             GraphPane MyPane1 = ZedGraph.GraphPane;
             counter++;
             list_moto_speed.Add(counter, pressure);
@@ -667,6 +699,32 @@ namespace monitor
                 }
             }
             return (crc_value);
+        }
+        //仪表重置
+        private void reset_gauge()
+        {
+            moto_speed_label.Text = "0";
+
+            moto_current_meter.Value = 0;
+            moto_current_label.Text = "0";
+
+            moto_press_meter.Value = 0;
+            moto_power_label.Text = "0";
+
+            press_gauge.Value = 0;
+            label_press_data.Text = "0";
+
+            flow_gauge.Value = 0;
+            label_float_data.Text = "0";
+
+            thermometer.Value = 0;
+            tempertature_label.Text = "0";
+
+            label_result_speed_data.Text = "0";
+            label_result_press_data.Text = "0";
+            label_result_float_data.Text = "0";
+
+            label_time.Text = "0";
         }
     }
 }
