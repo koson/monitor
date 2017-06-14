@@ -29,7 +29,7 @@ namespace monitor
         int modbus_counter;
         private byte[] moto_buff = new byte[10];
         //写
-        private byte[] modbus_start = new byte[] { 0x01, 0x06, 0x20, 0x00, 0x00, 0x01, 200, 1 };   //电机开始
+        private byte[] modbus_start = new byte[] { 0x01, 0x06, 0x20, 0x00, 0x00, 0x01, 0x43, 0xCA };   //电机开始
         private byte[] modbus_stop = new byte[] { 0x01, 0x06, 0x20, 0x00, 0x00, 0x05, 0x42, 0x09 };    //电机停转
         //读
         private byte[] moto_rspeed = new byte[8] { 0x01, 0x03, 0x10, 0x0F, 0x00, 0x01, 0xB0, 0xC9 };    //电机转速
@@ -645,7 +645,7 @@ namespace monitor
                 data_crc[i] = moto_buff[i];
             }
             crc_value = crc_chk_value(data_crc);
-            if (crc_value / (0xff + 1) == moto_buff[6] && crc_value % (0xff + 1) == moto_buff[7])
+            if (crc_value % (0xff + 1) == moto_buff[6] && crc_value / (0xff + 1) == moto_buff[7])
             {
                 int function = moto_buff[2]*(0xff+1)+moto_buff[3];
                 switch (moto_buff[1]) 

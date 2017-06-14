@@ -1,0 +1,10 @@
+E:\monitor\monitor\obj\x64\Debug\Interop.Microsoft.Office.Core.dll
+E:\monitor\monitor\obj\x64\Debug\Interop.VBIDE.dll
+E:\monitor\monitor\obj\x64\Debug\monitor.csproj.ResolveComReference.cache
+E:\monitor\monitor\obj\x64\Debug\monitor.form_main_program.resources
+E:\monitor\monitor\obj\x64\Debug\monitor.ParameSetForm.resources
+E:\monitor\monitor\obj\x64\Debug\monitor.TestModeForm.resources
+E:\monitor\monitor\obj\x64\Debug\monitor.SpeedModeForm.resources
+E:\monitor\monitor\obj\x64\Debug\monitor.Properties.Resources.resources
+E:\monitor\monitor\obj\x64\Debug\monitor.csproj.GenerateResource.Cache
+E:\monitor\monitor\obj\x64\Debug\monitor.exe.licenses
